@@ -5,28 +5,35 @@ import { throwApiErrorIfNeeded } from "./error.ts";
  * https://developer.github.com/v3/repos/deployments/
  */
 export interface DeploymentsApi {
-  listDeployments(params: {
-    owner: string,
-    repo: string,
-  }, payload?: {
-    sha?: string,
-    ref?: string,
-    task?: string,
-    environment?: string
-  }): Promise<Deployment[]>
+  listDeployments(
+    params: {
+      owner: string;
+      repo: string;
+    },
+    payload?: {
+      sha?: string;
+      ref?: string;
+      task?: string;
+      environment?: string;
+    }
+  ): Promise<Deployment[]>;
   getDeployment(params: {
-    owner: string,
-    repo: string,
-    id: number|string
-  }): Promise<Deployment>
-  createDeployment(params: {
-    owner: string, repo: string,
-  }, payload: CreateDeployment): Promise<Deployment>;
+    owner: string;
+    repo: string;
+    id: number | string;
+  }): Promise<Deployment>;
+  createDeployment(
+    params: {
+      owner: string;
+      repo: string;
+    },
+    payload: CreateDeployment
+  ): Promise<Deployment>;
   createDeploymentStatus(
     params: {
-    owner: string,
-    repo: string,
-    id: string,
+      owner: string;
+      repo: string;
+      id: string;
     },
     payload: CreateDeploymentStatus
   ): Promise<DeploymentStatus>;
@@ -162,11 +169,11 @@ export type DeploymentState =
   | "in_progress"
   | "queued"
   | "pending";
-export function deploymentsApi({token}: Credential): DeploymentsApi {
+export function deploymentsApi({ token }: Credential): DeploymentsApi {
   return {
-    async listDeployments({owner, repo}, payload = {}) {
+    async listDeployments({ owner, repo }, payload = {}) {
       const query = new URLSearchParams();
-      for (const [key,val] of Object.entries(payload)) {
+      for (const [key, val] of Object.entries(payload)) {
         if (val !== undefined) {
           query.append(key, `${val}`);
         }
@@ -178,26 +185,26 @@ export function deploymentsApi({token}: Credential): DeploymentsApi {
           headers: new Headers({
             authorization: `token ${token}`,
             "content-type": "application/json"
-          }),
+          })
         }
-      )
+      );
       throwApiErrorIfNeeded(resp, 200);
-      return (await resp.json()) as Deployment[]
+      return (await resp.json()) as Deployment[];
     },
-    async getDeployment({owner, repo, id}) {
+    async getDeployment({ owner, repo, id }) {
       const resp = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/deployments/${id}`,
         {
           method: "GET",
           headers: new Headers({
-            authorization: "token "+token
-          }),
+            authorization: "token " + token
+          })
         }
-      )
+      );
       throwApiErrorIfNeeded(resp, 200);
-      return (await resp.json()) as Deployment
+      return (await resp.json()) as Deployment;
     },
-    async createDeployment({owner, repo}, payload) {
+    async createDeployment({ owner, repo }, payload) {
       const resp = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/deployments`,
         {
@@ -211,7 +218,7 @@ export function deploymentsApi({token}: Credential): DeploymentsApi {
       await throwApiErrorIfNeeded(resp, 201);
       return (await resp.json()) as Deployment;
     },
-    async createDeploymentStatus({id, owner, repo}, payload) {
+    async createDeploymentStatus({ id, owner, repo }, payload) {
       const resp = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/deployments/${id}/statuses`,
         {

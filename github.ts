@@ -30,6 +30,6 @@ export interface GithubClient extends Credential, DeploymentsApi {}
 export function createGithubClient(credential: Credential): GithubClient {
   return {
     ...credential,
-    ...deploymentsApi(credential),
-  }
+    ...deploymentsApi(credential)
+  };
 }
